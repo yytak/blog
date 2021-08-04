@@ -1,0 +1,20 @@
+Veno Files – 个人网盘系统
+首先安装宝塔面板
+
+http://bt.cn
+
+新建网站
+
+从以下下载源码zip文件到网站目录下
+
+https://www.moerats.com/usr/down/veno-file-manager-v3.4.8.zip
+
+解压缩
+
+把/vfm目录下的文件复制到网站根目录下
+
+admin
+
+password
+
+转载自：https://www.moerats.com/archives/781/
