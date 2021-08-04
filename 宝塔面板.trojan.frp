@@ -1,0 +1,142 @@
+宝塔面板+trojan+frp
+新建一台vps–打开BBR
+wget -N --no-check-certificate "https://raw.githubusercontent.com/chiakge/Linux-NetSpeed/master/tcp.sh" && chmod +x tcp.sh && ./tcp.sh
+安装宝塔面板
+安装宝塔面板–安装运行环境–一键部署wordpress
+
+新建两个域名，一个主域名（用于博客），一个二级域名（用于trojan)
+
+点击网站–伪静态–wordpress
+
+勾选两个域名–申请ssl–勾选强制ssl
+
+软件商店–已安装的软件–nginx–修改配置（在http行之前插入以下代码）
+
+stream {
+    # 这里就是 SNI 识别，将域名映射成一个配置名
+    map $ssl_preread_server_name $backend_name {
+        ***.***.com web;   #修改成自己的主域名
+        ***.***.com trojan;    #修改成自己的二级域名
+    # 域名都不匹配情况下的默认值
+        default web;
+    }
+ 
+    # web，配置转发详情
+    upstream web {
+        server 127.0.0.1:4433;
+    }
+ 
+    # trojan，配置转发详情
+    upstream trojan {
+        server 127.0.0.1:10110;
+    }
+ 
+    # 监听 443 并开启 ssl_preread
+    server {
+        listen 443 reuseport;
+        listen [::]:443 reuseport;
+        proxy_pass  $backend_name;
+        ssl_preread on;
+    }
+}
+
+点击网站–设置–配置文件（修改前面，并在最后一行之后插入代码）
+
+删除在 server 模块下面的 server_name 里面的 二级域名，只保留主域名 不会请看 视频教程
+更改 server 模块下面的443端口为 4433，（两个地方，一个listen，一个server_port）。
+在原有的 server 模块下面增加如下代码—第60多行后（请自行替换域名）
+
+
+server
+{
+    listen 10111;
+    server_name ***.***.***;    #修改成自己的二级域名
+    location / {
+        
+        if ($http_host !~ "^**.***.com$") {    #修改成自己的主域名
+          rewrite  ^(.*)    https://***.***.com$1 permanent;	#修改成自己的主域名
+        }
+ 
+       if ($server_port !~ 4433){
+        rewrite ^(.*)   https://***.***.com$1 permanent;      #修改成自己的主域名
+    }
+ 
+        proxy_redirect off;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        
+    }
+    access_log logs/aaa.com_access.log;
+}
+完成后重启nginx
+
+安装trojan
+bash -c "$(curl -fsSL https://raw.githubusercontent.com/trojan-gfw/trojan-quickstart/master/trojan-quickstart.sh)"
+设置trojan自动启动
+
+systemctl enable trojan
+修改/usr/local/etc/trojan/config.json文件
+
+
+{
+    "run_type": "server",
+    "local_addr": "127.0.0.1",
+    "local_port": 10110,
+    "remote_addr": "127.0.0.1",
+    "remote_port": 10111,
+    "password": [
+        "321321321"
+    ],
+    "log_level": 1,
+    "ssl": {
+        "cert": "/www/server/panel/vhost/cert/***.***.com/fullchain.pem",  #二级域名的目录名
+        "key": "/www/server/panel/vhost/cert/***.***.com/privkey.pem",     #二级域名的目录名
+        "key_password": "",
+        "cipher": "ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384",
+        "cipher_tls13": "TLS_AES_128_GCM_SHA256:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_256_GCM_SHA384",
+        "prefer_server_cipher": true,
+        "alpn": [
+            "http/1.1"
+        ],
+        "alpn_port_override": {
+            "h2": 81
+        },
+        
+        
+
+        "reuse_session": true,
+        "session_ticket": false,
+        "session_timeout": 600,
+        "plain_http_response": "",
+        "curves": "",
+        "dhparam": ""
+    },
+    "tcp": {
+        "prefer_ipv4": false,
+        "no_delay": true,
+        "keep_alive": true,
+        "reuse_port": false,
+        "fast_open": false,
+        "fast_open_qlen": 20
+    },
+    "mysql": {
+        "enabled": false,
+        "server_addr": "127.0.0.1",
+        "server_port": 3306,
+        "database": "trojan",
+        "username": "trojan",
+        "password": "",
+        "key": "",
+        "cert": "",
+        "ca": ""
+    }
+}
+重启trojan
+
+server trojan restart
+安装frp
+wget https://raw.githubusercontent.com/MvsCode/frps-onekey/master/install-frps.sh -O ./install-frps.sh
+chmod 700 ./install-frps.sh
+./install-frps.sh install
+完成后需要在宝塔面板–安全–放行相关端口(808,4400.6443.5443)
