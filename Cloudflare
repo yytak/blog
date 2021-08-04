@@ -1,0 +1,12 @@
+Cloudflare
+www.cloudflare.com
+
+首先登陆，输入网站，选择免费，开始扫描DNS记录
+
+更改自己的DNS为cloudflare的DNS记录
+
+下一步
+
+添加网站的DNS记录
+
+代理
