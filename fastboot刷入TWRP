@@ -1,0 +1,35 @@
+Android设备通过fastboot刷入TWRP
+方法一：通过fastboot刷入TWRP的方式
+
+首先去TWRP官网下载TWRP安装文件https://twrp.me/Devices/
+
+1.进入bootloader
+
+adb reboot bootloader
+也可在开机时，同时按住电源键+音量减，进入bootloader (不同的手机进入方式稍微有所差别)
+
+2.输入以下指令
+
+fastboot devices -l
+若出来一串序列号，说明安卓设备已连接
+
+3,解锁bootloader
+
+如果你的设备已经锁定bootloader，首先需要解锁才可刷机（某些厂商还需要申请解锁码才可以）
+2015和以后的设备: $ fastboot flashing unlock
+2014以前的设备: $ fastboot oem unlock
+
+4.刷入TWRP
+
+fastboot flash recovery twrp-3.0.2-0-hammerhead.img
+fastboot reboot
+
+至此，TWRP安装成功，重启后敲入以下命令进入recovery看TWRP 的强大风采吧！
+
+adb reboot recovery
+
+方法二：已Root手机可通过TWRP官方应用TWRP Manager的方式安装
+
+下载TWRP Manager.apk后安装，首先授予Root权限，然后选择自己设备后会自动下载相应刷机包，根据提示进行操作即可
+
+原文地址：https://my.oschina.net/robslove/blog/2876303
