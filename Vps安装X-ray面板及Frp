@@ -1,0 +1,12 @@
+Vps安装X-ray面板及Frp
+一键脚本安装x-ray
+
+wget -P /root -N --no-check-certificate "https://raw.githubusercontent.com/mack-a/v2ray-agent/master/install.sh" && chmod 700 /root/install.sh && /root/install.sh
+
+切记打开BBR，上次没有打开BBR，卡到没朋友。
+
+一键脚本安装frp
+
+wget https://raw.githubusercontent.com/MvsCode/frps-onekey/master/install-frps.sh -O ./install-frps.sh
+chmod 700 ./install-frps.sh
+./install-frps.sh install
