@@ -1,0 +1,31 @@
+Google Cloud 谷歌云安装
+debian 10–机器系统N1–f1-micro–允许http/https流量勾选
+
+选择vpc网络–外部IP地址–设置为静态
+
+防火墙–创建规则–目标（网络中所有实例）–流量方向入站，ip 0.0.0.0/0,协议和商品全部允许。
+
+流量方向出站，ip 0.0.0.0/0，协议和商品全部允许。
+
+/etc/ssh/sshd.config
+PermitRootLogin yes
+PasswordAuthentication yes
+
+apt -y install curl #Debian
+yum -y install curl #CentOS
+
+apt -y install wget #Debia n
+yum -y install wget #CentOS
+
+BBR 魔改
+wget -N –no-check-certificate “https://raw.githubusercontent.com/chiakge/Linux-NetSpeed/master/tcp.sh” && chmod +x tcp.sh && ./tcp.sh
+
+安装/更新
+source <(curl -sL https://git.io/trojan-install)
+
+卸载
+source <(curl -sL https://git.io/trojan-install) –remove
+
+
+安装完后，VPS上面输入 trojan 可进入管理程序
+浏览器访问 https://域名 可在线web页面管理trojan用户
