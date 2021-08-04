@@ -25,9 +25,9 @@ sleep 60 && rclone mount one: /mnt/sdb1/ichbinf@one \
 
 linux加载远程NAS里的samba
 ubuntu挂载nas—-https://www.jianshu.com/p/ca5ecb5ecab0
-sudo mount -t cifs //192.168.1.4/6T /home/yytak/Desktop/op -o username=root,password=fsheng,vers=1.0
+sudo mount -t cifs //192.168.1.4/6T /home/yytak/Desktop/op -o username=用户名,password=密码,vers=1.0
 
 
-nano /etc/sambapasswd(username=root passwd=fsheng)
+nano /etc/sambapasswd
 nano /etc/fstab
 //192.168.2.236/share /home/han/NAS cifs credentials=/etc/sambapasswd 0 0
