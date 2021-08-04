@@ -1,0 +1,16 @@
+解决fcitx输入法黑框
+killall fcitx-qimpanel
+
+执行完这个以后找个地方试一下输入法正常不 如果输入法好了的话 就是我说的这个问题 如果没用的话 你再找别的方法吧
+
+如果执行完正常的话 再执行下面的 设置每次开机不启动 fcitx-qimpanel
+
+sudo mv /etc/xdg/autostart/fcitx-qimpanel-autostart.desktop /etc/xdg/autostart/fcitx-qimpanel-autostart.desktop.bak
+
+然后重启
+
+如果误执行 或者执行上面的重启后无效 或者 你用搜狗输入法提示 需要 fcitx-qimpanel 就执行下面的恢复
+
+sudo mv /etc/xdg/autostart/fcitx-qimpanel-autostart.desktop.bak /etc/xdg/autostart/fcitx-qimpanel-autostart.desktop
+
+转载:https://forum.ubuntu.org.cn/viewtopic.php?t=473340
