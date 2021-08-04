@@ -1,0 +1,20 @@
+解决debian （Friendly ARM 嵌入式板）的sudo等一部分命令无法TAB补全
+TAB对于比较长的命令在使用时是十分方便的，最近就遇到TAB 键无法补全sudo后跟的命令的情况因此去网上取经。在一篇博客中找到解决问题的方法，觉得大牛们写的太精炼然后自己做如下总结方便自已以后解决类似问题。
+
+1，首先检查是否安装了 自动补全插件（bash-completion）
+
+sudo apt-get install bash-completion
+这条命令会显示安装情况，按照提示安装上插件就可以啦了。如果按转完成后依然无法自动补全按一下步骤检查。
+
+2，查看用户主目录下的.bashrc文件如果没有一下内容就将这部分内容加到文件最后。
+
+if [ -f  /etc/bash_completion  ]:
+
+then
+
+    .  /etc/bash_completion (注意在.后有空格否则会找不到文件)
+
+fi
+再执行source .bashrc 使其立即生效。
+
+参考博文：http://blog.licess.com/debianubuntu-apt-get-install-autocompletion/
