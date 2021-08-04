@@ -1,0 +1,22 @@
+ubuntu安装windows字体
+方法如下:
+
+第一步:将windows下喜欢的字体文件copy到一个文件夹中,例如将XP里WINDOWS/FONTS中的字体文件(本人比较贪心,把整个文件夹copy了过来……),在linux中命名为xpfonts
+
+第二步:将copy到的字体文件夹copy到系统字体文件夹中并且修改权限
+
+     sudo cp {存放xpfonts的路径}/xpfonts   /usr/share/fonts/
+
+     sudo chmod u+rwx /usr/share/fonts/xpfonts/*
+第三步:建立字体缓存
+
+     cd /usr/share/fonts/xpfonts
+
+     sudo mkfontscale
+
+sudo mkfontdir
+
+sudo fc-cache -fv
+这样就OK了,系统里面已经有了你想要的字体,这样用openoffice的时候再也不会遇到字体太少的尴尬了……如果看不到的话,sudo shutdown -r now试一下?
+
+转载：https://www.cnblogs.com/xiaowuyi/p/3199819.html
