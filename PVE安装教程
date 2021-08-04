@@ -1,0 +1,53 @@
+PVE安装教程
+新建虚拟机
+不使用任何介质
+硬盘随便，后面会删
+其他默认，创建虚拟机
+删除光驱，添加网卡，分离硬盘，删除硬盘
+上传img2kvm与op固件
+chmod +x img2kvm
+./img2kvm op.img 101 vm-101-disk-1
+双击装载硬盘
+修改启动（TMD上次在这里卡了半死，SB）
+
+openwrt下载地址：https://github.com/SuLingGG/OpenWrt-Rpi
+密码password
+/etc/config/network
+
+旁路由设置
+网络接口-编辑-网关（192.168.1.1）-IPV4广播（192.168.1.255）-DNS服务器（192.168.1.1）
+物理设置-取消桥接接口-选择物理硬件LAN接口（不要点保存&应用）
+防火墙添加规则
+iptables -t nat -I POSTROUTING -j MASQUERADE
+重启防火墙
+
+如果只是旁路由，可以只加一个网卡，如果是做主路由，要两块网卡
+
+直通硬盘：
+ls /dev/disk/by-id/
+复制硬盘的号码
+qm set 100 -sata1 /dev/disk/by-id/ata-wdc-XXXX
+
+Pve更新
+http://blog.sina.com.cn/s/blog_679870470102z073.html
+
+安装群晖
+新建虚拟机
+不使用任何介质
+硬盘随便，后面会删
+其他默认，创建虚拟机
+删除光驱，添加网卡（E1000），分离硬盘，删除硬盘
+上传img2kvm与群晖启动固件（.img）
+.img2kvm ***.img 101 vm-101-disk-1
+双击装载成sata硬盘
+再新建一个sata硬盘，用于安装群晖（8G)
+find.synology.com
+更改启动项
+
+安装PVE及设置
+
+https://www.bilibili.com/video/BV114411Y7qw
+
+E1000网卡兼容性好，不过速度慢
+
+VirtIO半虚拟化速度快，不过黑群不认识。
