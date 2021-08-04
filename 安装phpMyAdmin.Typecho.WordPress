@@ -1,0 +1,144 @@
+安装phpMyAdmin、Typecho、WordPress
+原文地址：https://blog.csdn.net/god4/article/details/104375683
+
+搭建好onmp环境，就可以发布PHP网站了。本节记录一下部署phpMyAdmin、Typecho、WordPress的过程。
+
+九、安装phpMyAdmin
+Onmp环境终于弄好，在部署网站之前，先装个phpMyAdmin，方便管理数据库。因为wget不行，curl不会，依然是手动操作。
+
+下载地址：https://files.phpmyadmin.net/phpMyAdmin/4.8.3/phpMyAdmin-4.8.3-all-languages.zip，解压到/opt/wwwroot/，将目录phpMyAdmin-4.8.3-all-languages重命名为phpMyAdmin。
+
+执行下列命令（复制自onmp.sh）：
+
+cp /opt/wwwroot/phpMyAdmin/config.sample.inc.php /opt/wwwroot/phpMyAdmin/config.inc.php
+
+chmod 644 /opt/wwwroot/phpMyAdmin/config.inc.php
+
+mkdir -p /opt/wwwroot/phpMyAdmin/tmp
+
+chmod 777 /opt/wwwroot/phpMyAdmin/tmp
+
+sed -e “s/.blowfish_secret./\$cfg[‘blowfish_secret’] = ‘onmponmponmponmponmponmponmponmp’;/g” -i /opt/wwwroot/phpMyAdmin/config.inc.php
+
+最后添加到nginx虚拟路径，增加Web服务。cp /opt/etc/nginx/vhost/default.conf /opt/etc/nginx/vhost/phpMyAdmin.conf，修改phpMyAdmin.conf内容为：
+
+server {
+
+listen 82;
+
+server_name localhost;
+
+root /opt/wwwroot/phpMyAdmin/;
+
+index index.html index.htm index.php tz.php;
+
+include /opt/etc/nginx/conf/php-fpm.conf;
+
+#otherconf
+}
+
+重启服务onmp restart，浏览器登录http://192.168.31.1:82，帐户root，密码123456，即可进入数据库管理界面。
+
+十、安装Typecho
+安装好了phpMyAdmin，再安装一个简单的博客网站Typecho，比phpMyAdmin要简单些。
+
+浏览器先登录phpMyAdmin（http://192.168.31.1:82），创建Typecho的数据库，我这里就叫typecho，编码是utf8mb4_general_ci。创建完成后，开始安装Typecho。
+
+下载地址：http://typecho.org/downloads/1.1-17.10.30-release.tar.gz，解压到/opt/wwwroot/，将目录build重命名为typecho。
+
+执行下列命令增加执行权限，进行站点配置：
+
+chmod -R 777 /opt/wwwroot/typecho
+
+cp /opt/etc/nginx/vhost/default.conf /opt/etc/nginx/vhost/typecho.conf
+
+修改typecho.conf内容为：
+
+server {
+
+listen 83;
+
+server_name localhost;
+
+root /opt/wwwroot/typecho/;
+
+index index.html index.htm index.php tz.php;
+
+include /opt/etc/nginx/conf/php-fpm.conf;
+
+include /opt/etc/nginx/conf/typecho.conf;
+}
+
+重启服务onmp restart，浏览器登录http://192.168.31.1:83进行Typecho的安装。输入数据库名字typecho，密码123456，管理员信息等，确认即可安装成功。其登录页面为http://192.168.31.1:83/admin/login.php，注册页面为http://192.168.31.1:83/admin/register.php，注册功能需在后台开启。
+
+Typecho界面清新简洁，真的很赞，要是再有手机App支持就更好了。搜了一下，有人说Typecho在0.8版中加入了对WordPress手机客户端的支持，但是后来又取消了，也有人开发了一款Typecho的Android客户端，不知道是否好用。
+
+参考资料
+
+用手机更新Typecho文章
+
+http://zhangzhao.me/wordpress-android-app-support-typecho.zz
+
+为Typecho写了一个android客户端
+
+https://www.v2ex.com/t/596811
+
+南博1.4 – Typecho 客户端 2020-02-01
+
+https://nabo.krait.cn/
+
+十一、安装WordPress
+最后再装个WordPress体验一下，毕竟是用的最多的博客系统，看看在路由上运行的如何。
+
+浏览器先登录phpMyAdmin（http://192.168.31.1:82），创建WordPress的数据库，我这里就叫wordpress，编码是utf8mb4_unicode_ci。创建完成后，开始安装WordPress。
+
+下载地址：https://cn.wordpress.org/wordpress-4.9.4-zh_CN.zip，解压到/opt/wwwroot/，目录名为wordpress。
+
+执行下列命令增加执行权限，进行站点配置：
+
+chmod -R 777 /opt/wwwroot/wordpress
+
+cp /opt/etc/nginx/vhost/default.conf /opt/etc/nginx/vhost/wordpress.conf
+
+修改wordpress.conf内容为：
+
+server {
+
+listen 84;
+
+server_name localhost;
+
+root /opt/wwwroot/wordpress/;
+
+index index.html index.htm index.php tz.php;
+
+#php-fpm wordpress.conf中已有php-fpm
+
+include /opt/etc/nginx/conf/wordpress.conf;
+}
+
+重启服务onmp restart，浏览器登录http://192.168.31.1:84进行WordPress的安装。输入数据库名字wordpress，密码123456，确认连接无误后，进入下一步。
+
+填写完用户名密码后，点击安装即部署完成。其登录页面为http://192.168.31.1:84/wp-login.php，注册页面为http://192.168.31.1:84/wp-login.php?action=register，注册功能和Typecho一样需在后台开启。
+
+从后台就能看到，WordPress确实比Typecho功能多太多，乱七八糟，设置上比较复杂，就像大杂烩，有的后台是没链接的，比如http://192.168.31.1:84/wp-admin/options.php。运行也确实要慢很多，数据库都崩了一次。安装WordPress主要是因为它的手机客户端，能把发文的过程简化是最好了，其他功能不重要。
+
+百度好久，去掉了WordPress的自动升级、红点提示、升级失败提示和FTP登录提示，然而最后遇到一个严重问题，上传图片稍大一点就失败，甚至数据库都崩了。设置文件大小限制无效，设置uploads目录权限无效，设置.htaccess文件无效，关闭自动缩略图无效，修改WP_Image_Editor_GD无效。
+
+跟踪了一下发现，实际上文件已经上传成功，只有媒体文件才可能失败，应该是在读取媒体文件信息时出错了。撸了好久代码终于找到了大概位置，文件wp-admin/includes/image.php中函数wp_generate_attachment_metadata( $attachment_id, $file )调用wp_get_image_editor($file)（$loaded = $editor->load()）和wp_read_video_metadata($file)读取元数据时会出错，看来还就是媒体文件解析器的问题。难道是因为内存太小了？想了想这个问题还真不太好解决，干脆直接在函数前面加条语句返回，把媒体分析功能屏蔽算了：
+
+return apply_filters( ‘wp_generate_attachment_metadata’, $metadata, $attachment_id );
+
+这下媒体库名存实亡，成了附件库，所有图标都是一样的。测试了一下，居然还能正常发文章，但是手机App上还是经常上传失败，一不做二不休，直接把wp_get_image_editor函数搞掉算了。打开wp-includes/media.php，在wp_get_image_editor函数开头加上一句：
+
+return new WP_Error( ‘image_no_editor’, __(‘No editor could be selected.’) );
+
+这下手机App终于可以正常上传了。但是需要缩略图的主题没有了图片，变成了纯文字，一个字：丑。换了个Twenty Fifteen主题，不用缩略图的，先将就玩玩吧，不行把WordPress删掉算了。
+
+参考资料
+
+如何使用WordPress手机客户端？
+
+https://www.v2ex.com/t/596811
+
+原文地址：https://blog.csdn.net/god4/article/details/104375683
