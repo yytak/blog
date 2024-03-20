@@ -1,6 +1,0 @@
-更改PVE登录IP管理地址
-/etc/network/interfaces
-/etc/issue
-/etc/hosts
-
-更改以上文件相对应的地址即可
